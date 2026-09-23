@@ -1,0 +1,40 @@
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Environments
+.env
+*.env
+.venv/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Data artifacts & Lakehouse Parquet
+data/
+data/**
+*.parquet
+*.csv
+data/lake/
+*.log
+
+# MLflow tracking local artifacts
+mlruns/
+.mlflow/
+
+# IDE & OS
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

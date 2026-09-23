@@ -1,0 +1,16 @@
+{
+  "project_id": "GP-170",
+  "project_name": "mirante_tecnologia_data_scientist_bridge_project",
+  "repo_name": "mirante-tecnologia-data-scientist-bridge-project",
+  "target_company": "Mirante Tecnologia",
+  "target_role": "Data Scientist",
+  "paradigm": "DeliveryParadigm.CLI_TUI",
+  "core_algorithm": "AlgorithmFamily.WEIBULL",
+  "generated_at": "2026-09-23T03:19:44.494293+00:00",
+  "schema_version": "1.0",
+  "validation": {
+    "token_blacklist_check": "passed",
+    "ast_security_check": "passed",
+    "py_compile_check": "passed"
+  }
+}
