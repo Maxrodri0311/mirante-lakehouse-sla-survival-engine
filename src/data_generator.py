@@ -1,6 +1,6 @@
 """
 src/data_generator.py - Calibrated Stochastic Telemetry & Execution Generator.
-Simulates real-world Apache Spark & Delta Lake pipeline telemetry for Mirante Tecnologia (GP-170).
+Simulates real-world Apache Spark & Delta Lake pipeline telemetry for Mirante Tecnologia Lakehouse.
 Generates physical pipeline execution logs and time-varying observation snapshots (as-of t_c)
 governed by Accelerated Failure Time (AFT) physics, partition skew, shuffle spill,
 JVM GC pauses, and Delta Lake OCC concurrency contention.

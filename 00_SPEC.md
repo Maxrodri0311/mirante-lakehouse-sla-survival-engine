@@ -1,10 +1,10 @@
-# 📐 SPEC & BLUEPRINT: Mirante Tecnologia Data Scientist Bridge Project (GP-170)
+# 📐 SPEC & BLUEPRINT: Mirante Lakehouse SLA Survival Engine
 
 **Target Company:** Mirante Tecnologia (Brazil Enterprise Public & Financial Consulting)  
 **Target Role:** Data Scientist  
 **Delivery Paradigm:** `EXPLAINABLE_ANALYTICS & CLI_TUI`  
 **Core Algorithm:** `Accelerated Failure Time (Weibull / Log-Logistic) & Time-Varying Hazard Modeling + Causal FinOps Decision Engine`  
-**Repository:** `https://github.com/Maxrodri0311/GP-170_mirante_tecnologia_data_scientist_bridge_project.git`  
+**Repository:** `https://github.com/Maxrodri0311/mirante-lakehouse-sla-survival-engine.git`  
 
 ---
 

@@ -1,11 +1,10 @@
 {
-  "project_id": "GP-170",
-  "project_name": "mirante_tecnologia_data_scientist_bridge_project",
-  "repo_name": "mirante-tecnologia-data-scientist-bridge-project",
+  "project_name": "mirante_lakehouse_sla_survival_engine",
+  "repo_name": "mirante-lakehouse-sla-survival-engine",
   "target_company": "Mirante Tecnologia",
   "target_role": "Data Scientist",
-  "paradigm": "DeliveryParadigm.CLI_TUI",
-  "core_algorithm": "AlgorithmFamily.WEIBULL",
+  "paradigm": "EXPLAINABLE_ANALYTICS & CLI_TUI",
+  "core_algorithm": "Accelerated Failure Time (Weibull & Log-Logistic) & Causal FinOps Policy",
   "generated_at": "2026-09-23T03:19:44.494293+00:00",
   "schema_version": "1.0",
   "validation": {

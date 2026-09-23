@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "mirante-tecnologia-data-scientist-bridge-project"
+name = "mirante-lakehouse-sla-survival-engine"
 version = "0.1.0"
-description = "GP-170 - mirante_tecnologia_data_scientist_bridge_project: Mirante Tecnologia requires an enterprise-grade Causal & Survival Lifecycle Analytics architecture under Data Scientist ..."
+description = "Enterprise Causal & Survival Lifecycle Analytics Engine for Apache Spark & Delta Lake mission-critical pipelines at Mirante Tecnologia."
 authors = [
     { name = "Maximiliano Rodriguez", email = "maxrodri0311@gmail.com" }
 ]
@@ -20,7 +20,8 @@ dependencies = [
     "pydantic>=2.0.0",
     "rich>=13.0.0",
     "pytest>=7.3.0",
-    "lifelines>=0.28.0"]
+    "lifelines>=0.28.0"
+]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
