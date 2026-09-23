@@ -68,16 +68,20 @@ We implement two complementary parametric survival models:
    Crucial for multi-stage Spark executions where hazard rates are **non-monotonic** (hazard spikes sharply during wide shuffle dependencies, then stabilizes during final write phases).
 
 ### C. Counterfactual FinOps Decision Policy (Loss Minimization)
-A prognosis alone is insufficient; remediation requires causal action. Given candidate interventions $a \in \mathcal{A}$:
-$$\mathcal{A} = \{\text{NO\_OP}, \text{AQE\_COALESCE\_SKEW\_JOIN}, \text{SCALE\_WORKERS\_MEMORY}, \text{BACKOFF\_OCC\_SERIALIZE}, \text{RESTART\_CLEAN}\}$$
+A prognosis alone is insufficient; remediation requires causal action. Given candidate interventions:
+- `NO_OP`: Continue nominal execution without intervention ($C_{\text{action}} = 0\text{ USD}$).
+- `AQE_COALESCE_SKEW_JOIN`: Dynamic shuffle partition coalescing and skew salting ($C_{\text{action}} = 18\text{ USD}$).
+- `SCALE_WORKERS_MEMORY`: Scale worker count and executor memory ($C_{\text{action}} = 54\text{ USD}$).
+- `BACKOFF_OCC_SERIALIZE`: Exponential backoff with full jitter on Delta commit locks ($C_{\text{action}} = 12\text{ USD}$).
+- `RESTART_CLEAN`: Early termination and restart with pre-allocated shuffle memory ($C_{\text{action}} = 35\text{ USD}$).
 
 The policy minimizes expected enterprise loss:
 
-$$\arg\min_{a \in \mathcal{A}} \mathbb{E}[L(a \mid H_t)] = C_{\text{action}}(a) + P(\text{Breach} \mid do(a), H_t) \cdot \text{ContractPenalty}$$
+$$\min_{a \in \mathcal{A}} \mathbb{E}[L(a \mid H_t)] = C_{\text{action}}(a) + P(\text{Breach} \mid do(a), H_t) \cdot \text{ContractPenalty}$$
 
-$$\text{Expected Net Savings}(a^*) = \mathbb{E}[L(\text{NO\_OP} \mid H_t)] - \mathbb{E}[L(a^* \mid H_t)]$$
+$$\text{NetSavings}(a) = \mathbb{E}[L(\text{NO-OP} \mid H_t)] - \mathbb{E}[L(a \mid H_t)]$$
 
-The system prescribes $a^*$ if and only if $\text{Net Savings}(a^*) \ge \$250.00$ and physical feasibility constraints are satisfied.
+The system prescribes optimal action $a^{\star}$ if and only if $\text{NetSavings}(a^{\star}) \ge 250\text{ USD}$ and physical feasibility constraints are satisfied.
 
 ```
 +-----------------------------------------------------------------------------------------------+
@@ -237,7 +241,11 @@ This delivers an **800x latency acceleration** ($34\text{ ms} \to 0.06\text{ ms}
 > *"In data engineering telemetry, lookahead bias is insidious. If a snapshot taken at $t_c = 1800\text{s}$ contains final metrics like `observed_duration_sec`, total shuffle bytes, or final commit status, the model learns a trivial, ungeneralizable identity.
 > We enforce two architectural safeguards:
 > 1. **Strict Data Contract Partitioning:** In [`src/domain/entities.py`](file:///c:/Users/Maxi.DESKTOP-8LJC287/Desktop/Entornos_Antigravity/W5(Varios)/GProjects/GP-170_mirante_tecnologia_data_scientist_bridge_project/src/domain/entities.py), `PipelineObservationSnapshot` exposes exclusively variables observable as-of $t_c$: elapsed seconds, instantaneous partition skew ratio, cumulative disk spill so far, GC pause ratio, and OCC conflict retries up to $t_c$. Target outcomes (`observed_duration_sec`, `event_breach`) are physically excluded from snapshot schemas.
-> 2. **Automated Mathematical Assertion in CI:** In [`tests/test_data_generator.py`](file:///c:/Users/Maxi.DESKTOP-8LJC287/Desktop/Entornos_Antigravity/W5(Varios)/GProjects/GP-170_mirante_tecnologia_data_scientist_bridge_project/tests/test_data_generator.py), the unit test `test_zero_label_leakage_invariant` joins every generated snapshot with its execution run and asserts $\forall \text{ snapshot, } \text{as\_of\_seconds} < \text{observed\_duration\_sec}$. Any record violating temporal precedence breaks the build immediately."*
+> 2. **Automated Mathematical Assertion in CI:** In [`tests/test_data_generator.py`](file:///c:/Users/Maxi.DESKTOP-8LJC287/Desktop/Entornos_Antigravity/W5(Varios)/GProjects/GP-170_mirante_tecnologia_data_scientist_bridge_project/tests/test_data_generator.py), the unit test `test_zero_label_leakage_invariant` joins every generated snapshot with its execution run and asserts:
+>    ```python
+>    assert (df_snapshots["as_of_seconds"] < df_runs["observed_duration_sec"]).all()
+>    ```
+>    Any record violating temporal precedence breaks the build immediately."*
 
 ---
 
@@ -246,7 +254,7 @@ This delivers an **800x latency acceleration** ($34\text{ ms} \to 0.06\text{ ms}
 > *"This is governed by Amdahl's Law in distributed computing. Partition skew occurs when a disproportionate volume of keys hashes to a single reducer partition (e.g. a massive Brazilian corporate taxpayer during Receita tax reconciliation).
 > If a stage has 200 tasks and 1 straggler task processes 80% of the volume, that straggler is **strictly serial**: it executes on exactly 1 CPU core in 1 executor. Adding 16 or 32 worker nodes accelerates the 199 trivial tasks (which were already finishing in seconds) but leaves the straggler runtime **completely unchanged**.
 > Our causal policy ([`src/domain/causal_policy.py`](file:///c:/Users/Maxi.DESKTOP-8LJC287/Desktop/Entornos_Antigravity/W5(Varios)/GProjects/GP-170_mirante_tecnologia_data_scientist_bridge_project/src/domain/causal_policy.py)) encodes this causal graph:
-> When `skew_duration_ratio >= 1.8x` dominates, the counterfactual effectiveness of `SCALE_WORKERS_MEMORY` is penalized ($P(\text{Breach} \mid do(\text{scale})) \approx P(\text{Breach} \mid \text{no\_op})$). The policy actively refuses worker scaling and selects `AQE_COALESCE_SKEW_JOIN` (Adaptive Query Execution skew-join splitting and salting), which splits the oversized partition across multiple tasks at a trivial overhead of $18 USD, saving upwards of $20,000 USD in contract penalties."*
+> When `skew_duration_ratio >= 1.8x` dominates, the counterfactual effectiveness of `SCALE_WORKERS_MEMORY` is penalized ($P(\text{Breach} \mid do(\text{scale})) \approx P(\text{Breach} \mid \text{NO-OP})$). The policy actively refuses worker scaling and selects `AQE_COALESCE_SKEW_JOIN` (Adaptive Query Execution skew-join splitting and salting), which splits the oversized partition across multiple tasks at a trivial overhead of $18 USD, saving upwards of $20,000 USD in contract penalties."*
 
 ---
 
